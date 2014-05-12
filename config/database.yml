@@ -3,8 +3,8 @@ development:
   encoding: unicode
   database: todo_development
   pool: 5
-  username: 
-  password:
+  username: postgres
+  password: password
 
 test:
   adapter: postgresql
