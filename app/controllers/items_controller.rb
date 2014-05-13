@@ -3,12 +3,27 @@ class ItemsController < ApplicationController
   before_action :set_list
 
   def create
-    
-    if @list.add(item_params[:description])
-      redirect_to user_list_path(@list.user, @list), notice: 'Item was successfully created.'
-    else
-      render action: 'new'
+    respond_to do |format|
+
+      format.html {
+        if @list.add(item_params[:description])
+          redirect_to user_list_path(@list.user, @list), notice: 'Item was successfully created.'
+        else
+          render action: 'new'
+        end        
+      }
+
+      format.json {
+        if @list.add(item_params[:description])
+          render json: {message: "Item was updated successfully"}
+        else
+          render json: {message: "Item was not successfully added"}
+        end        
+      }
+
     end
+
+
   end
 
   def new
@@ -16,8 +31,18 @@ class ItemsController < ApplicationController
   end
 
   def destroy
-    @item.mark_complete
-    redirect_to user_list_path(@list.user, @list)
+    respond_to do |format|
+      @item.mark_complete
+      format.html {
+        redirect_to user_list_path(@list.user, @list)
+      }
+
+      format.json {
+        render json: {message: "Item marked as complete successfully"}
+      }
+    end
+    
+    
   end
 
   private

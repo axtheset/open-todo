@@ -1,10 +1,9 @@
-class UsersController < ApplicationController
+class Api::UsersController < ApplicationController
   before_action :set_user, only: [:show, :edit, :update, :destroy]
-  
+
   def index
     @users = User.all
     respond_to do |format|
-      format.html { render :index }
       format.json { render json: @users }
     end
   end
@@ -12,7 +11,6 @@ class UsersController < ApplicationController
   def show
     @lists = @user.lists
     respond_to do |format|
-      format.html { render :show }
       format.json { render json: @lists }
     end
   end
@@ -25,29 +23,17 @@ class UsersController < ApplicationController
   end
 
   def create
-    respond_to do |format|
-      @user = User.new(user_params)
+    @user = User.new(user_params)
 
-      format.html {
-
-        if @user.save
-          redirect_to @user, notice: 'User was successfully created.'
-        else
-          render action: 'new'
-        end        
-      }
-
-      format.json {
-
-        if @user.save
-          render json: {message: 'User was created successfully'}
-        else
-          render json: {message: 'Error creating user', erorrs: @user.errors}
-        end         
-      }
-
+    if @user.save
+      respond_to do |format|
+        format.json { render json: {message: 'User was created successfully'} }
+      end
+    else
+      respond_to do |format|
+        format.json { render json: {message: 'Error creating user'} }
+      end
     end
-
   end
 
   def update

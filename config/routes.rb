@@ -10,4 +10,5 @@ Todo::Application.routes.draw do
   resources :items, only: [:destroy]
 
   root to: 'users#new'
+
 end
