@@ -1,6 +1,6 @@
 class UsersController < ApplicationController
   before_action :set_user, only: [:show, :edit, :update, :destroy]
-  skip_before_action :verify_authenticity_token
+  
   def index
     @users = User.all
     respond_to do |format|
@@ -26,8 +26,9 @@ class UsersController < ApplicationController
 
   def create
     respond_to do |format|
+      @user = User.new(user_params)
+
       format.html {
-        @user = User.new(user_params)
 
         if @user.save
           redirect_to @user, notice: 'User was successfully created.'
@@ -37,16 +38,14 @@ class UsersController < ApplicationController
       }
 
       format.json {
-        @user = User.new()
-        @user.username = params[:username]
-        @user.password = params[:password]
 
         if @user.save
           render json: {message: 'User was created successfully'}
         else
-          render json: {message: 'Error creating user'}
+          render json: {message: 'Error creating user', erorrs: @user.errors}
         end         
       }
+
     end
 
   end

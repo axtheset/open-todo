@@ -4,6 +4,10 @@ class ListsController < ApplicationController
 
   def show
     @items = @list.items.completed
+    respond_to do |format|
+      format.html { render :show }
+      format.json { render json: @items }
+    end
   end
 
   def new
@@ -15,30 +19,75 @@ class ListsController < ApplicationController
 
   def index
     @lists = @user.lists
+    respond_to do |format|
+      format.html { render :index }
+      format.json { render json: @lists }
+    end
   end
 
   def create
-    @list = List.new(list_params)
-    @list.user_id = @user.id
+    respond_to do |format|
+      @list = List.new(list_params)
+      @list.user_id = @user.id
 
-    if @list.save
-      redirect_to user_list_path(@user, @list), notice: 'List was successfully created.'
-    else
-      render action: 'new'
+      format.json {
+        if @list.save
+          render json: {message: "List was created successfully for #{@list.user_id}"}
+        else
+          render json: {message: 'Error creating list', errors: @list.errors}
+        end         
+      }
+
+      format.html {
+        if @list.save
+          redirect_to user_list_path(@user, @list), notice: 'List was successfully created.'
+        else
+          render action: 'new'
+        end        
+      }
+
     end
   end
 
   def update
-    if @list.update(list_params)
-      redirect_to user_list_path(@user, @list), notice: 'List was successfully updated.'
-    else
-      render action: 'edit'
+    respond_to do |format|
+ 
+      format.html {
+        if @list.update(list_params)
+          redirect_to user_list_path(@user, @list), notice: 'List was successfully updated.'
+        else
+          render action: 'edit'
+        end        
+      }
+
+      format.json {
+        if @list.update(list_params)
+          render json: {message: "List was updated successfully"}
+        else
+          render json: {message: "List update unsuccessful"}
+        end        
+      }
+
     end
   end
 
   def destroy
-    @list.destroy
-    redirect_to @user
+    respond_to do |format|
+      @list.destroy
+
+      format.json {
+        render json: {message: "List destroyed successfully"}
+      }
+
+      format.html {
+        redirect_to @user
+      }
+    end
+
+    
+
+
+    
   end
 
   private
